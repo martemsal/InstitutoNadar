@@ -187,7 +187,7 @@
         <div>
             <button class="sidebar-btn" onclick="toggleSubmenu('subTurma')"><span>🏢</span> Turmas</button>
             <div id="subTurma" class="submenu" style="display:none">
-                <button class="sidebar-btn" onclick="showSection('turmas')">Listar</button>
+                <button class="sidebar-btn" onclick="showSection('turmas'); renderList('turmas')">Listar</button>
                 <button class="sidebar-btn" onclick="openModal('modalTurma')">Cadastrar</button>
             </div>
         </div>
@@ -196,7 +196,7 @@
         <div>
             <button class="sidebar-btn" onclick="toggleSubmenu('subProf')"><span>👨‍🏫</span> Professores</button>
             <div id="subProf" class="submenu" style="display:none">
-                <button class="sidebar-btn" onclick="showSection('professores')">Listar</button>
+                <button class="sidebar-btn" onclick="showSection('professores'); renderList('professores')">Listar</button>
                 <button class="sidebar-btn" onclick="openModal('modalProfessor')">Cadastrar</button>
             </div>
         </div>
@@ -205,7 +205,7 @@
         <div>
             <button class="sidebar-btn" onclick="toggleSubmenu('subUser')"><span>👤</span> Usuários</button>
             <div id="subUser" class="submenu" style="display:none">
-                <button class="sidebar-btn" onclick="showSection('usuarios')">Listar</button>
+                <button class="sidebar-btn" onclick="showSection('usuarios'); renderList('usuarios')">Listar</button>
                 <button class="sidebar-btn" onclick="openModal('modalUsuario')">Cadastrar</button>
             </div>
         </div>
@@ -219,61 +219,26 @@
         <div id="sectionAlunos" class="admin-section">
             <h1 style="margin-bottom: 2rem;">Alunos Registrados</h1>
             <div class="alunos-list" id="listaAlunos">
-                <!-- Alunos existentes -->
-                <div class="aluno-item" onclick="viewAluno('João Silva')">
-                    <span>João Silva</span>
-                    <span class="status-badge status-aguardando">Aguardando</span>
-                </div>
-                <div class="aluno-item" onclick="viewAluno('Maria Oliveira')">
-                    <span>Maria Oliveira</span>
-                    <span class="status-badge status-documentacao">Falta Documentação</span>
-                </div>
-                <div class="aluno-item" onclick="viewAluno('Carlos Santos')">
-                    <span>Carlos Santos</span>
-                    <span class="status-badge status-matriculado">Matriculado</span>
-                </div>
+                <!-- Mantendo mock por enquanto, mas pode ser dinâmico também -->
             </div>
         </div>
 
         <!-- SEÇÃO TURMAS -->
         <div id="sectionTurmas" class="admin-section" style="display:none">
             <h1 style="margin-bottom: 2rem;">Turmas Cadastradas</h1>
-            <div class="alunos-list">
-                <div class="aluno-item">
-                    <span>Hidroginástica - 18:00</span>
-                    <span class="status-badge status-matriculado">45/50 Vagas</span>
-                </div>
-                <div class="aluno-item">
-                    <span>Natação Adulto - 07:00</span>
-                    <span class="status-badge status-matriculado">12/20 Vagas</span>
-                </div>
-            </div>
+            <div class="alunos-list" id="listaTurmas"></div>
         </div>
 
         <!-- SEÇÃO PROFESSORES -->
         <div id="sectionProfessores" class="admin-section" style="display:none">
             <h1 style="margin-bottom: 2rem;">Professores</h1>
-            <div class="alunos-list">
-                <div class="aluno-item">
-                    <span>Prof. Ricardo Souza</span>
-                    <span class="status-badge status-matriculado">Ativo</span>
-                </div>
-                <div class="aluno-item">
-                    <span>Profª Ana Clara</span>
-                    <span class="status-badge status-matriculado">Ativo</span>
-                </div>
-            </div>
+            <div class="alunos-list" id="listaProfessores"></div>
         </div>
 
         <!-- SEÇÃO USUÁRIOS -->
         <div id="sectionUsuarios" class="admin-section" style="display:none">
             <h1 style="margin-bottom: 2rem;">Usuários do Sistema</h1>
-            <div class="alunos-list">
-                <div class="aluno-item">
-                    <span>admin_master</span>
-                    <span class="status-badge status-matriculado">Administrador</span>
-                </div>
-            </div>
+            <div class="alunos-list" id="listaUsuarios"></div>
         </div>
     </div>
 
@@ -281,30 +246,31 @@
     <div id="modalTurma" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalTurma')">&times;</span>
-            <h2>Cadastrar Nova Turma</h2>
+            <h2 id="titleTurma">Cadastrar Nova Turma</h2>
+            <input type="hidden" id="editIndexTurma">
             <div class="form-grid">
                 <div class="input-group">
                     <label>Nome da Turma</label>
-                    <input type="text" placeholder="Ex: Hidroginástica">
+                    <input type="text" id="turmaNome" placeholder="Ex: Hidroginástica">
                 </div>
                 <div class="input-group">
                     <label>Limite de Vagas</label>
-                    <input type="number" placeholder="Ex: 50">
+                    <input type="number" id="turmaVagas" placeholder="Ex: 50">
                 </div>
                 <div class="input-group">
                     <label>Horário</label>
-                    <input type="time">
+                    <input type="time" id="turmaHorario">
                 </div>
                 <div class="input-group">
                     <label>Professor Responsável</label>
-                    <select>
-                        <option>Selecione</option>
+                    <select id="turmaProf">
+                        <option value="">Selecione</option>
                         <option>Prof. Ricardo</option>
                         <option>Prof. Ana</option>
                     </select>
                 </div>
             </div>
-            <button class="btn-action btn-approve" onclick="closeModal('modalTurma')">CRIAR TURMA</button>
+            <button class="btn-action btn-approve" onclick="saveData('turmas')">SALVAR TURMA</button>
         </div>
     </div>
 
@@ -312,22 +278,23 @@
     <div id="modalProfessor" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalProfessor')">&times;</span>
-            <h2>Cadastrar Professor</h2>
+            <h2 id="titleProf">Cadastrar Professor</h2>
+            <input type="hidden" id="editIndexProf">
             <div class="form-grid">
                 <div class="input-group col-12">
                     <label>Nome Completo</label>
-                    <input type="text">
+                    <input type="text" id="profNome">
                 </div>
                 <div class="input-group">
                     <label>Usuário de Acesso</label>
-                    <input type="text">
+                    <input type="text" id="profUser">
                 </div>
                 <div class="input-group">
                     <label>Senha Provisória</label>
-                    <input type="password">
+                    <input type="password" id="profPass">
                 </div>
             </div>
-            <button class="btn-action btn-approve" onclick="closeModal('modalProfessor')">CADASTRAR PROFESSOR</button>
+            <button class="btn-action btn-approve" onclick="saveData('professores')">SALVAR PROFESSOR</button>
         </div>
     </div>
 
@@ -368,27 +335,124 @@
     </div>
 
     <script>
+        // --- DATA MANAGEMENT (CRUD) ---
+        const storageKey = (type) => `nadar_${type}`;
+
+        function saveData(type) {
+            const data = JSON.parse(localStorage.getItem(storageKey(type)) || '[]');
+            let item = {};
+            let editIndex = -1;
+
+            if (type === 'turmas') {
+                item = {
+                    nome: document.getElementById('turmaNome').value,
+                    vagas: document.getElementById('turmaVagas').value,
+                    horario: document.getElementById('turmaHorario').value,
+                    prof: document.getElementById('turmaProf').value
+                };
+                editIndex = document.getElementById('editIndexTurma').value;
+            } else if (type === 'professores') {
+                item = {
+                    nome: document.getElementById('profNome').value,
+                    user: document.getElementById('profUser').value,
+                    pass: document.getElementById('profPass').value
+                };
+                editIndex = document.getElementById('editIndexProf').value;
+            }
+
+            if (editIndex > -1) {
+                data[editIndex] = item;
+            } else {
+                data.push(item);
+            }
+
+            localStorage.setItem(storageKey(type), JSON.stringify(data));
+            alert('Salvo com sucesso!');
+            closeModal(type === 'turmas' ? 'modalTurma' : 'modalProfessor');
+            renderList(type);
+            
+            // Limpa campos
+            document.querySelectorAll('input').forEach(i => i.value = '');
+            document.querySelectorAll('select').forEach(s => s.value = '');
+            document.getElementById('editIndexTurma').value = -1;
+            document.getElementById('editIndexProf').value = -1;
+        }
+
+        function renderList(type) {
+            const listId = 'lista' + type.charAt(0).toUpperCase() + type.slice(1);
+            const container = document.getElementById(listId);
+            const data = JSON.parse(localStorage.getItem(storageKey(type)) || '[]');
+            
+            if (data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Nenhum registro encontrado.</p>';
+                return;
+            }
+
+            container.innerHTML = data.map((item, index) => `
+                <div class="aluno-item">
+                    <div>
+                        <strong>${item.nome}</strong> 
+                        ${item.horario ? ` - ${item.horario} (${item.vagas} vagas)` : ''}
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="editItem('${type}', ${index})" style="background:none; border:none; color:var(--accent); cursor:pointer;">Editar</button>
+                        <button onclick="deleteItem('${type}', ${index})" style="background:none; border:none; color:#ef4444; cursor:pointer;">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteItem(type, index) {
+            if (confirm('Tem certeza que deseja excluir?')) {
+                const data = JSON.parse(localStorage.getItem(storageKey(type)) || '[]');
+                data.splice(index, 1);
+                localStorage.setItem(storageKey(type), JSON.stringify(data));
+                renderList(type);
+            }
+        }
+
+        function editItem(type, index) {
+            const data = JSON.parse(localStorage.getItem(storageKey(type)) || '[]');
+            const item = data[index];
+
+            if (type === 'turmas') {
+                document.getElementById('turmaNome').value = item.nome;
+                document.getElementById('turmaVagas').value = item.vagas;
+                document.getElementById('turmaHorario').value = item.horario;
+                document.getElementById('turmaProf').value = item.prof;
+                document.getElementById('editIndexTurma').value = index;
+                document.getElementById('titleTurma').innerText = 'Editar Turma';
+                openModal('modalTurma');
+            } else if (type === 'professores') {
+                document.getElementById('profNome').value = item.nome;
+                document.getElementById('profUser').value = item.user;
+                document.getElementById('profPass').value = item.pass;
+                document.getElementById('editIndexProf').value = index;
+                document.getElementById('titleProf').innerText = 'Editar Professor';
+                openModal('modalProfessor');
+            }
+        }
+
+        // --- UI FUNCTIONS ---
         function toggleSubmenu(id) {
             const sub = document.getElementById(id);
             sub.style.display = sub.style.display === 'none' ? 'flex' : 'none';
         }
 
         function showSection(sectionId) {
-            // Esconde todas as seções
-            document.querySelectorAll('.admin-section').forEach(sec => {
-                sec.style.display = 'none';
-            });
-            
-            // Mostra a seção alvo
+            document.querySelectorAll('.admin-section').forEach(sec => sec.style.display = 'none');
             const target = 'section' + sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
             document.getElementById(target).style.display = 'block';
-
-            // Atualiza estado visual do menu
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
             if (sectionId === 'alunos') document.getElementById('btnAlunos').classList.add('active');
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function openModal(id) { 
+            // Reset titles if opening for new registration
+            if (id === 'modalTurma' && document.getElementById('editIndexTurma').value == -1) document.getElementById('titleTurma').innerText = 'Cadastrar Nova Turma';
+            if (id === 'modalProfessor' && document.getElementById('editIndexProf').value == -1) document.getElementById('titleProf').innerText = 'Cadastrar Professor';
+            document.getElementById(id).style.display = 'flex'; 
+        }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
         function viewAluno(nome) {
