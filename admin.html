@@ -3,45 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Instituto Nadar</title>
+    <title>Painel Admin - Instituto Nadar</title>
     <link rel="stylesheet" href="index.css">
     <style>
-        .admin-container {
-            padding-top: 100px;
+        body { display: flex; min-height: 100vh; overflow: hidden; }
+        
+        /* Dashboard Layout */
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 1rem;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
         }
-        .card {
+
+        .main-content {
+            flex: 1;
+            padding: 80px 2rem 2rem;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #001f3f, var(--bg-dark));
+        }
+
+        .sidebar-btn {
+            padding: 1rem;
+            border-radius: 10px;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: var(--font-family);
+        }
+
+        .sidebar-btn:hover, .sidebar-btn.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+        .submenu {
+            padding-left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: -0.5rem;
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin: 1rem 0 0.5rem 1rem;
+        }
+
+        /* Alunos List */
+        .alunos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .aluno-item {
             background: var(--bg-card);
             border: 1px solid var(--glass-border);
-            padding: 3rem;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            padding: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        h2 { color: var(--accent); margin-bottom: 1rem; }
+
+        .aluno-item:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        /* Modal / Push */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-aguardando { background: #facc15; color: #000; }
+        .status-documentacao { background: #ef4444; color: #fff; }
+        .status-matriculado { background: #22c55e; color: #fff; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 0.8rem; color: var(--text-muted); }
+        .input-group input, .input-group select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .btn-action {
+            margin-top: 2rem;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-approve { background: var(--accent); color: var(--bg-dark); }
+        .btn-approve:hover { background: #fff; transform: scale(1.02); }
+
+        header { padding: 0.5rem 2rem; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">Instituto Nadar</div>
+        <div class="logo">Admin Nadar</div>
         <nav>
             <ul class="nav-links">
-                <li><a href="index.html">Início</a></li>
-                <li><a href="aluno.html">Área do Aluno</a></li>
-                <li><a href="admin.html">Painel Admin</a></li>
+                <li><a href="index.html">Sair</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="admin-container">
-        <div class="card">
-            <h2>Painel Administrativo</h2>
-            <p>Em breve você poderá gerenciar matrículas, turmas e pagamentos aqui.</p>
+    <div class="sidebar">
+        <div class="section-title">Cadastros</div>
+        <button class="sidebar-btn" onclick="openModal('modalTurma')"><span>🏢</span> Turmas</button>
+        <button class="sidebar-btn" onclick="openModal('modalProfessor')"><span>👨‍🏫</span> Professores</button>
+        <button class="sidebar-btn" onclick="openModal('modalUsuario')"><span>👤</span> Usuários</button>
+
+        <div class="section-title">Gerenciamento</div>
+        <button class="sidebar-btn active" onclick="showSection('alunos')"><span>👥</span> Alunos</button>
+    </div>
+
+    <div class="main-content">
+        <div id="sectionAlunos">
+            <h1 style="margin-bottom: 2rem;">Alunos Registrados</h1>
+            <div class="alunos-list" id="listaAlunos">
+                <!-- Mock Alunos -->
+                <div class="aluno-item" onclick="viewAluno('João Silva')">
+                    <span>João Silva</span>
+                    <span class="status-badge status-aguardando">Aguardando</span>
+                </div>
+                <div class="aluno-item" onclick="viewAluno('Maria Oliveira')">
+                    <span>Maria Oliveira</span>
+                    <span class="status-badge status-documentacao">Falta Documentação</span>
+                </div>
+                <div class="aluno-item" onclick="viewAluno('Carlos Santos')">
+                    <span>Carlos Santos</span>
+                    <span class="status-badge status-matriculado">Matriculado</span>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- MODAL TURMA -->
+    <div id="modalTurma" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalTurma')">&times;</span>
+            <h2>Cadastrar Nova Turma</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Nome da Turma</label>
+                    <input type="text" placeholder="Ex: Hidroginástica">
+                </div>
+                <div class="input-group">
+                    <label>Limite de Vagas</label>
+                    <input type="number" placeholder="Ex: 50">
+                </div>
+                <div class="input-group">
+                    <label>Horário</label>
+                    <input type="time">
+                </div>
+                <div class="input-group">
+                    <label>Professor Responsável</label>
+                    <select>
+                        <option>Selecione</option>
+                        <option>Prof. Ricardo</option>
+                        <option>Prof. Ana</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-action btn-approve" onclick="closeModal('modalTurma')">CRIAR TURMA</button>
+        </div>
+    </div>
+
+    <!-- MODAL PROFESSOR -->
+    <div id="modalProfessor" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalProfessor')">&times;</span>
+            <h2>Cadastrar Professor</h2>
+            <div class="form-grid">
+                <div class="input-group col-12">
+                    <label>Nome Completo</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>Usuário de Acesso</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>Senha Provisória</label>
+                    <input type="password">
+                </div>
+            </div>
+            <button class="btn-action btn-approve" onclick="closeModal('modalProfessor')">CADASTRAR PROFESSOR</button>
+        </div>
+    </div>
+
+    <!-- MODAL VISUALIZAÇÃO ALUNO -->
+    <div id="modalAluno" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalAluno')">&times;</span>
+            <h2 id="alunoNome">Detalhes do Aluno</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Validação de Matrícula</p>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>CPF</label>
+                    <input type="text" value="123.456.789-00" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Data Nascimento</label>
+                    <input type="text" value="01/01/2010" readonly>
+                </div>
+                <div class="input-group">
+                    <label>RG/CNH Aluno</label>
+                    <a href="#" style="color: var(--accent); font-size: 0.8rem;">Ver Arquivo</a>
+                </div>
+                <div class="input-group">
+                    <label>Comprovante Residência</label>
+                    <a href="#" style="color: var(--accent); font-size: 0.8rem;">Ver Arquivo</a>
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 1rem;">
+                <label>Vincular a Turma</label>
+                <select>
+                    <option>Selecione uma Turma</option>
+                    <option>Hidroginástica - 18:00 (45 vagas)</option>
+                    <option>Natação Infantil - 14:00 (12 vagas)</option>
+                </select>
+            </div>
+            <button class="btn-action btn-approve" onclick="approveAluno()">APROVAR E MATRICULAR</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function viewAluno(nome) {
+            document.getElementById('alunoNome').innerText = nome;
+            openModal('modalAluno');
+        }
+
+        function approveAluno() {
+            alert('Aluno matriculado com sucesso! Notificação enviada.');
+            closeModal('modalAluno');
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
