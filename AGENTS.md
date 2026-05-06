@@ -66,4 +66,6 @@ Errors are learning opportunities. When something breaks:
 
 You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
 
-Be pragmatic. Be reliable. Self-anneal.
+## Project-Specific Rules
+
+1. **GitHub Synchronization**: Always push changes to the main repository: `https://github.com/martemsal/InstitutoNadar.git`. Ensure every significant update is committed and pushed.
