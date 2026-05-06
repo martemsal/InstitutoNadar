@@ -580,7 +580,34 @@
 
         document.getElementById('registrationForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Matrícula enviada com sucesso! Em breve o Instituto Nadar entrará em contato.');
+            
+            const formData = new FormData(e.target);
+            const studentData = {
+                id: Date.now(),
+                nome: formData.get('nome_aluno'),
+                cpf: formData.get('cpf'),
+                data_nascimento: formData.get('data_nascimento'),
+                endereco: formData.get('endereco'),
+                numero: formData.get('numero'),
+                bairro: formData.get('bairro'),
+                cidade: formData.get('cidade'),
+                celular: formData.get('celular'),
+                email: formData.get('email'),
+                turmas: Array.from(formData.getAll('turma_selecionada')),
+                status: 'Aguardando',
+                data_cadastro: new Date().toLocaleDateString('pt-br'),
+                // Dados adicionais para o Admin ver depois
+                responsavel: formData.get('nome_responsavel'),
+                emergencia: formData.get('emergencia'),
+                username: formData.get('username')
+            };
+
+            const alunos = JSON.parse(localStorage.getItem('nadar_alunos') || '[]');
+            alunos.push(studentData);
+            localStorage.setItem('nadar_alunos', JSON.stringify(alunos));
+
+            alert('Matrícula realizada com sucesso! Você já pode acessar a área do aluno.');
+            window.location.href = 'aluno.html';
         });
     </script>
 </body>

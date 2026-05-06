@@ -334,35 +334,18 @@
     <div id="modalAluno" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalAluno')">&times;</span>
-            <h2 id="alunoNome">Detalhes do Aluno</h2>
+            <h2 id="modalAlunoTitle">Detalhes do Aluno</h2>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Validação de Matrícula</p>
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>CPF</label>
-                    <input type="text" value="123.456.789-00" readonly>
-                </div>
-                <div class="input-group">
-                    <label>Data Nascimento</label>
-                    <input type="text" value="01/01/2010" readonly>
-                </div>
-                <div class="input-group">
-                    <label>RG/CNH Aluno</label>
-                    <a href="#" style="color: var(--accent); font-size: 0.8rem;">Ver Arquivo</a>
-                </div>
-                <div class="input-group">
-                    <label>Comprovante Residência</label>
-                    <a href="#" style="color: var(--accent); font-size: 0.8rem;">Ver Arquivo</a>
-                </div>
+            <div id="alunoDetalhes">
+                <!-- Dinâmico -->
             </div>
             <div class="input-group" style="margin-top: 1rem;">
                 <label>Vincular a Turma</label>
-                <select>
+                <select id="vincularTurma">
                     <option>Selecione uma Turma</option>
-                    <option>Hidroginástica - 18:00 (45 vagas)</option>
-                    <option>Natação Infantil - 14:00 (12 vagas)</option>
                 </select>
             </div>
-            <button class="btn-action btn-approve" onclick="approveAluno()">APROVAR E MATRICULAR</button>
+            <button class="btn-action btn-approve" id="btnAprovar">APROVAR E MATRICULAR</button>
         </div>
     </div>
 
@@ -444,6 +427,16 @@
                 return;
             }
 
+            if (type === 'alunos') {
+                container.innerHTML = data.map((item, index) => `
+                    <div class="aluno-item" onclick="viewAluno(${index})">
+                        <span>${item.nome}</span>
+                        <span class="status-badge status-${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span>
+                    </div>
+                `).join('');
+                return;
+            }
+
             container.innerHTML = data.map((item, index) => `
                 <div class="aluno-item">
                     <div>
@@ -508,7 +501,10 @@
             const target = 'section' + sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
             document.getElementById(target).style.display = 'block';
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
-            if (sectionId === 'alunos') document.getElementById('btnAlunos').classList.add('active');
+            if (sectionId === 'alunos') {
+                document.getElementById('btnAlunos').classList.add('active');
+                renderList('alunos');
+            }
         }
 
         function openModal(id) { 
@@ -538,14 +534,54 @@
         }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-        function viewAluno(nome) {
-            document.getElementById('alunoNome').innerText = nome;
+        function viewAluno(index) {
+            const alunos = JSON.parse(localStorage.getItem('nadar_alunos') || '[]');
+            const aluno = alunos[index];
+            if (!aluno) return;
+
+            const detalhes = document.getElementById('alunoDetalhes');
+            detalhes.innerHTML = `
+                <div class="form-grid">
+                    <div class="input-group"><label>CPF</label><input type="text" value="${aluno.cpf}" readonly></div>
+                    <div class="input-group"><label>Cidade</label><input type="text" value="${aluno.cidade}" readonly></div>
+                    <div class="input-group"><label>Celular</label><input type="text" value="${aluno.celular}" readonly></div>
+                    <div class="input-group"><label>Data Cadastro</label><input type="text" value="${aluno.data_cadastro}" readonly></div>
+                    <div class="input-group col-12"><label>Turmas Pretendidas</label><input type="text" value="${aluno.turmas.join(', ') || 'Nenhuma'}" readonly></div>
+                </div>
+            `;
+            document.getElementById('modalAlunoTitle').innerText = aluno.nome;
+            
+            // Popula turmas para vínculo
+            const select = document.getElementById('vincularTurma');
+            const turmas = JSON.parse(localStorage.getItem('nadar_turmas') || '[]');
+            select.innerHTML = '<option value="">Selecione uma Turma</option>';
+            turmas.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.nome;
+                opt.text = `${t.nome} - ${t.horario}`;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('btnAprovar').onclick = () => approveAluno(index);
             openModal('modalAluno');
         }
 
-        function approveAluno() {
-            alert('Aluno matriculado com sucesso! Notificação enviada.');
+        function approveAluno(index) {
+            const alunos = JSON.parse(localStorage.getItem('nadar_alunos') || '[]');
+            const turma = document.getElementById('vincularTurma').value;
+            
+            if (!turma) {
+                alert('Selecione uma turma para vincular o aluno!');
+                return;
+            }
+
+            alunos[index].status = 'Matriculado';
+            alunos[index].turmaFinal = turma;
+            localStorage.setItem('nadar_alunos', JSON.stringify(alunos));
+            
+            alert('Aluno matriculado com sucesso!');
             closeModal('modalAluno');
+            renderList('alunos');
         }
 
         window.onclick = function(event) {
