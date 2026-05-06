@@ -141,14 +141,55 @@
         }
 
         header { padding: 0.5rem 2rem; }
+
+        /* Login Modal Override */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-card {
+            background: #111827;
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 { margin-bottom: 1.5rem; color: var(--accent-gold); }
+        .login-card .input-group { margin-bottom: 1rem; text-align: left; }
     </style>
 </head>
 <body>
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2>Acesso do Aluno</h2>
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" id="loginUser" placeholder="Seu nome de usuário">
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="loginPass" placeholder="Sua senha">
+            </div>
+            <button class="sidebar-btn active" style="margin-top: 1rem; justify-content: center;" onclick="doLogin()">ENTRAR NO PAINEL</button>
+            <p id="loginError" style="color: #ef4444; font-size: 0.8rem; margin-top: 1rem; display: none;">Usuário ou senha incorretos!</p>
+        </div>
+    </div>
+
     <header>
         <div class="logo">Instituto Nadar</div>
         <nav>
             <ul class="nav-links">
-                <li><a href="index.html">Sair</a></li>
+                <li><a href="#" onclick="doLogout()">Sair</a></li>
             </ul>
         </nav>
     </header>
@@ -179,19 +220,19 @@
                     <div class="info-grid">
                         <div class="input-group">
                             <label>Nome Completo</label>
-                            <input type="text" value="João Silva" readonly>
+                            <input type="text" id="displayNome" readonly>
                         </div>
                         <div class="input-group">
                             <label>E-mail (Atualize se necessário)</label>
-                            <input type="email" value="joao@email.com">
+                            <input type="email" id="displayEmail">
                         </div>
                         <div class="input-group">
                             <label>Celular</label>
-                            <input type="tel" value="(47) 99999-9999">
+                            <input type="tel" id="displayCelular">
                         </div>
                         <div class="input-group">
                             <label>Turma Atual</label>
-                            <input type="text" value="Hidroginástica - 18:00" readonly style="color: var(--accent-gold); font-weight: 600;">
+                            <input type="text" id="displayTurma" readonly style="color: var(--accent-gold); font-weight: 600;">
                         </div>
                     </div>
                 </div>
@@ -263,10 +304,72 @@
                     img.src = event.target.result;
                     img.style.display = 'block';
                     document.querySelector('.profile-photo span').style.display = 'none';
+                    
+                    // Salva foto na sessão (opcional/mock)
+                    const session = JSON.parse(sessionStorage.getItem('nadar_aluno_sessao'));
+                    if (session) {
+                        session.photo = event.target.result;
+                        sessionStorage.setItem('nadar_aluno_sessao', JSON.stringify(session));
+                    }
                 }
                 reader.readAsDataURL(file);
             }
         });
+
+        // --- AUTH & DATA ---
+        function doLogin() {
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            const alunos = JSON.parse(localStorage.getItem('nadar_alunos') || '[]');
+            
+            const aluno = alunos.find(a => a.username === user && a.password === pass);
+            
+            if (aluno) {
+                sessionStorage.setItem('nadar_aluno_sessao', JSON.stringify(aluno));
+                document.getElementById('loginOverlay').style.display = 'none';
+                loadDashboardData();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function doLogout() {
+            sessionStorage.removeItem('nadar_aluno_sessao');
+            window.location.reload();
+        }
+
+        function loadDashboardData() {
+            const session = JSON.parse(sessionStorage.getItem('nadar_aluno_sessao'));
+            if (!session) {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                return;
+            }
+
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('displayNome').value = session.nome;
+            document.getElementById('displayEmail').value = session.email || '';
+            document.getElementById('displayCelular').value = session.celular;
+            document.getElementById('displayTurma').value = session.turmaFinal || session.turmas[0] || 'Aguardando Vínculo';
+            
+            // Status
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            text.innerText = `Status: ${session.status}`;
+            dot.className = 'status-dot';
+            if (session.status === 'Matriculado') dot.classList.add('dot-green');
+            else if (session.status === 'Aguardando') dot.classList.add('dot-yellow');
+            else dot.classList.add('dot-red');
+
+            if (session.photo) {
+                const img = document.getElementById('profileImg');
+                img.src = session.photo;
+                img.style.display = 'block';
+                document.querySelector('.profile-photo span').style.display = 'none';
+            }
+        }
+
+        // Init
+        loadDashboardData();
     </script>
 </body>
 </html>
