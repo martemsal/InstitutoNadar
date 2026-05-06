@@ -168,7 +168,7 @@
     </header>
 
     <div class="form-container">
-        <h1 style="text-align: center; margin-bottom: 3rem; font-weight: 700;">FICHA DE CADASTRO<br><span style="color: var(--accent); font-size: 1.2rem;">COLÔNIA DE FÉRIAS: ESPINHEIROS 2026</span></h1>
+        <h1 style="text-align: center; margin-bottom: 3rem; font-weight: 700;">FICHA DE CADASTRO<br><span style="color: var(--accent); font-size: 1.2rem;">INSTITUTO NADAR SOCIAL</span></h1>
 
         <form id="registrationForm">
             <!-- DADOS PESSOAIS -->
@@ -316,16 +316,16 @@
                 <h2>DOCUMENTOS ENTREGUES</h2>
                 <div class="grid-container">
                     <div class="input-group col-4">
-                        <label>CI Aluno</label>
+                        <label>RG ou CNH Aluno</label>
                         <div class="upload-area" onclick="document.getElementById('doc_ci_aluno').click()">
-                            <span>Upload CI Aluno</span>
+                            <span>Upload Documento</span>
                             <input type="file" id="doc_ci_aluno" name="doc_ci_aluno" style="display:none">
                         </div>
                     </div>
                     <div class="input-group col-4">
-                        <label>CI Responsável</label>
+                        <label>RG ou CNH Responsável</label>
                         <div class="upload-area" onclick="document.getElementById('doc_ci_resp').click()">
-                            <span>Upload CI Resp.</span>
+                            <span>Upload Documento</span>
                             <input type="file" id="doc_ci_resp" name="doc_ci_resp" style="display:none">
                         </div>
                     </div>
@@ -358,6 +358,21 @@
                 <label class="radio-option">
                     <input type="checkbox" name="auth_participacao" required> Eu autorizo a participação e concordo com as regras.
                 </label>
+            </div>
+
+            <!-- ACESSO AO SISTEMA -->
+            <div class="form-section">
+                <h2>ACESSO AO SISTEMA</h2>
+                <div class="grid-container">
+                    <div class="input-group col-6">
+                        <label for="username">Nome de Usuário</label>
+                        <input type="text" id="username" name="username" placeholder="Escolha um nome de usuário" required>
+                    </div>
+                    <div class="input-group col-6">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" placeholder="Crie uma senha segura" required>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="btn-submit">FINALIZAR MATRÍCULA</button>
