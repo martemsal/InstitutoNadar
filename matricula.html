@@ -152,6 +152,53 @@
             .grid-container { display: flex; flex-direction: column; }
             .form-section { padding: 1.5rem; }
         }
+
+        /* Checkbox styling for Turmas */
+        .turma-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .turma-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .turma-card:hover {
+            background: rgba(0, 212, 255, 0.05);
+            border-color: var(--accent);
+        }
+
+        .turma-card input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .turma-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .turma-info strong {
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .turma-info span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -352,12 +399,10 @@
             <div class="form-section">
                 <h2>TURMAS E HORÁRIOS</h2>
                 <div class="terms-container" style="border-left-color: var(--accent-gold);">
-                    <p>As turmas disponíveis para o projeto serão listadas aqui em breve. O administrador do sistema cadastrará os horários para que você possa selecionar a melhor opção.</p>
+                    <p>Selecione as turmas e horários que deseja participar. Você pode escolher mais de uma opção se houver compatibilidade.</p>
                 </div>
-                <div id="turmas-container">
-                    <p style="color: var(--text-muted); font-style: italic; text-align: center; padding: 20px;">
-                        Aguardando publicação das turmas pelo administrador...
-                    </p>
+                <div id="turmas-container" class="turma-selection">
+                    <!-- Dinâmico via JS -->
                 </div>
             </div>
 
@@ -503,11 +548,35 @@
                     setTimeout(() => {
                         cidadeSelect.value = data.localidade;
                     }, 500);
+                    }, 500);
                 }
             } catch (error) {
                 console.error('Erro ao buscar CEP:', error);
             }
         }
+
+        // --- LOAD TURMAS ---
+        function loadTurmas() {
+            const container = document.getElementById('turmas-container');
+            const turmas = JSON.parse(localStorage.getItem('nadar_turmas') || '[]');
+            
+            if (turmas.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); font-style: italic; text-align: center; padding: 20px; width: 100%;">Nenhuma turma disponível no momento.</p>';
+                return;
+            }
+
+            container.innerHTML = turmas.map((t, i) => `
+                <label class="turma-card">
+                    <input type="checkbox" name="turma_selecionada" value="${t.nome}">
+                    <div class="turma-info">
+                        <strong>${t.nome}</strong>
+                        <span>Horário: ${t.horario} | Vagas: ${t.vagas}</span>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        loadTurmas();
 
         document.getElementById('registrationForm').addEventListener('submit', (e) => {
             e.preventDefault();
