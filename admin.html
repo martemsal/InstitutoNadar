@@ -254,7 +254,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalTurma')">&times;</span>
             <h2 id="titleTurma">Cadastrar Nova Turma</h2>
-            <input type="hidden" id="editIndexTurma">
+            <input type="hidden" id="editIndexTurma" value="-1">
             <div class="form-grid">
                 <div class="input-group">
                     <label>Nome da Turma</label>
@@ -285,7 +285,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalProfessor')">&times;</span>
             <h2 id="titleProf">Cadastrar Professor</h2>
-            <input type="hidden" id="editIndexProf">
+            <input type="hidden" id="editIndexProf" value="-1">
             <div class="form-grid">
                 <div class="input-group col-12">
                     <label>Nome Completo</label>
@@ -309,7 +309,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modalUsuario')">&times;</span>
             <h2 id="titleUser">Cadastrar Usuário</h2>
-            <input type="hidden" id="editIndexUser">
+            <input type="hidden" id="editIndexUser" value="-1">
             <div class="form-grid">
                 <div class="input-group">
                     <label>Nome do Usuário</label>
@@ -382,24 +382,24 @@
                     horario: document.getElementById('turmaHorario').value,
                     prof: document.getElementById('turmaProf').value
                 };
-                editIndex = document.getElementById('editIndexTurma').value;
+                editIndex = parseInt(document.getElementById('editIndexTurma').value);
             } else if (type === 'professores') {
                 item = {
                     nome: document.getElementById('profNome').value,
                     user: document.getElementById('profUser').value,
                     pass: document.getElementById('profPass').value
                 };
-                editIndex = document.getElementById('editIndexProf').value;
+                editIndex = parseInt(document.getElementById('editIndexProf').value);
             } else if (type === 'usuarios') {
                 item = {
                     nome: document.getElementById('userName').value,
                     level: document.getElementById('userLevel').value,
                     pass: document.getElementById('userPass').value
                 };
-                editIndex = document.getElementById('editIndexUser').value;
+                editIndex = parseInt(document.getElementById('editIndexUser').value);
             }
 
-            if (editIndex > -1) {
+            if (editIndex > -1 && !isNaN(editIndex)) {
                 data[editIndex] = item;
             } else {
                 data.push(item);
