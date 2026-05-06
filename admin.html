@@ -151,6 +151,13 @@
             padding: 0.8rem;
             border-radius: 8px;
             color: #fff;
+            width: 100%;
+        }
+
+        .input-group select option {
+            background-color: #111827;
+            color: #fff;
+            padding: 10px;
         }
 
         .btn-action {
@@ -264,9 +271,8 @@
                 <div class="input-group">
                     <label>Professor Responsável</label>
                     <select id="turmaProf">
-                        <option value="">Selecione</option>
-                        <option>Prof. Ricardo</option>
-                        <option>Prof. Ana</option>
+                        <option value="">Selecione um Professor</option>
+                        <!-- Dinâmico -->
                     </select>
                 </div>
             </div>
@@ -449,9 +455,27 @@
 
         function openModal(id) { 
             // Reset titles if opening for new registration
-            if (id === 'modalTurma' && document.getElementById('editIndexTurma').value == -1) document.getElementById('titleTurma').innerText = 'Cadastrar Nova Turma';
+            if (id === 'modalTurma') {
+                if (document.getElementById('editIndexTurma').value == -1) document.getElementById('titleTurma').innerText = 'Cadastrar Nova Turma';
+                populateProfessors();
+            }
             if (id === 'modalProfessor' && document.getElementById('editIndexProf').value == -1) document.getElementById('titleProf').innerText = 'Cadastrar Professor';
             document.getElementById(id).style.display = 'flex'; 
+        }
+
+        function populateProfessors() {
+            const select = document.getElementById('turmaProf');
+            const professors = JSON.parse(localStorage.getItem(storageKey('professores')) || '[]');
+            
+            // Mantém apenas o primeiro option (Selecione)
+            select.innerHTML = '<option value="">Selecione um Professor</option>';
+            
+            professors.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.nome;
+                option.text = p.nome;
+                select.appendChild(option);
+            });
         }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
