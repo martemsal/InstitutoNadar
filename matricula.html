@@ -595,9 +595,27 @@
                 turmas: Array.from(formData.getAll('turma_selecionada')),
                 status: 'Aguardando',
                 data_cadastro: new Date().toLocaleDateString('pt-br'),
-                // Dados adicionais para o Admin ver depois
+                
+                // Responsáveis
+                mae: formData.get('nome_mae'),
+                pai: formData.get('nome_pai'),
                 responsavel: formData.get('nome_responsavel'),
                 emergencia: formData.get('emergencia'),
+                
+                // Dados Adicionais
+                outro_projeto: formData.get('outro_projeto'),
+                escola: formData.get('escola'),
+                serie: formData.get('serie'),
+                turno: formData.get('turno'),
+                tipo_sanguineo: formData.get('tipo_sanguineo'),
+                alergias: formData.get('alergias'),
+                medicacao: formData.get('medicacao'),
+                
+                // Arquivos (Nomes apenas para o mock)
+                doc_aluno: document.getElementById('doc_ci_aluno').files[0]?.name || 'Não enviado',
+                doc_resp: document.getElementById('doc_ci_resp').files[0]?.name || 'Não enviado',
+                doc_comp: document.getElementById('doc_comp').files[0]?.name || 'Não enviado',
+                
                 username: formData.get('username')
             };
 

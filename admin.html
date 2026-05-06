@@ -541,12 +541,36 @@
 
             const detalhes = document.getElementById('alunoDetalhes');
             detalhes.innerHTML = `
-                <div class="form-grid">
-                    <div class="input-group"><label>CPF</label><input type="text" value="${aluno.cpf}" readonly></div>
-                    <div class="input-group"><label>Cidade</label><input type="text" value="${aluno.cidade}" readonly></div>
-                    <div class="input-group"><label>Celular</label><input type="text" value="${aluno.celular}" readonly></div>
-                    <div class="input-group"><label>Data Cadastro</label><input type="text" value="${aluno.data_cadastro}" readonly></div>
-                    <div class="input-group col-12"><label>Turmas Pretendidas</label><input type="text" value="${aluno.turmas.join(', ') || 'Nenhuma'}" readonly></div>
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 1rem;">DADOS PESSOAIS</h3>
+                    <div class="form-grid">
+                        <div class="input-group"><label>CPF</label><input type="text" value="${aluno.cpf}" readonly></div>
+                        <div class="input-group"><label>Nascimento</label><input type="text" value="${aluno.data_nascimento}" readonly></div>
+                        <div class="input-group"><label>Cidade</label><input type="text" value="${aluno.cidade}" readonly></div>
+                        <div class="input-group"><label>Celular</label><input type="text" value="${aluno.celular}" readonly></div>
+                        <div class="input-group col-12"><label>Endereço</label><input type="text" value="${aluno.endereco}, ${aluno.numero} - ${aluno.bairro}" readonly></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 1rem;">RESPONSÁVEIS E SAÚDE</h3>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Mãe</label><input type="text" value="${aluno.mae || '-'}" readonly></div>
+                        <div class="input-group"><label>Responsável</label><input type="text" value="${aluno.responsavel}" readonly></div>
+                        <div class="input-group"><label>Emergência</label><input type="text" value="${aluno.emergencia}" readonly></div>
+                        <div class="input-group"><label>Tipo Sanguíneo</label><input type="text" value="${aluno.tipo_sanguineo || '-'}" readonly></div>
+                        <div class="input-group col-12"><label>Alergias/Medicação</label><input type="text" value="${aluno.alergias || 'Nenhuma'} / ${aluno.medicacao === 'sim' ? 'Usa' : 'Não usa'}" readonly></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 1rem;">ARQUIVOS E TURMAS</h3>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Doc. Aluno</label><span style="color: var(--accent); font-size: 0.8rem;">📎 ${aluno.doc_aluno}</span></div>
+                        <div class="input-group"><label>Doc. Responsável</label><span style="color: var(--accent); font-size: 0.8rem;">📎 ${aluno.doc_resp}</span></div>
+                        <div class="input-group"><label>Comprovante</label><span style="color: var(--accent); font-size: 0.8rem;">📎 ${aluno.doc_comp}</span></div>
+                        <div class="input-group"><label>Turmas Pretendidas</label><input type="text" value="${aluno.turmas.join(', ') || 'Nenhuma'}" readonly></div>
+                    </div>
                 </div>
             `;
             document.getElementById('modalAlunoTitle').innerText = aluno.nome;
@@ -554,11 +578,11 @@
             // Popula turmas para vínculo
             const select = document.getElementById('vincularTurma');
             const turmas = JSON.parse(localStorage.getItem('nadar_turmas') || '[]');
-            select.innerHTML = '<option value="">Selecione uma Turma</option>';
+            select.innerHTML = '<option value="">Selecione uma Turma para Matricular</option>';
             turmas.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.nome;
-                opt.text = `${t.nome} - ${t.horario}`;
+                opt.text = `${t.nome} - ${t.horario} (${t.vagas} vagas)`;
                 select.appendChild(opt);
             });
 
