@@ -16,7 +16,7 @@
                 <li><a href="index.html">Início</a></li>
                 <li><a href="aluno.html">Área do Aluno</a></li>
                 <li><a href="professor.html">Acesso Professor</a></li>
-                <li><a href="admin.html">Painel Admin</a></li>
+                <li><a href="#" onclick="adminLogin(event)">Painel Admin</a></li>
             </ul>
         </nav>
     </header>
@@ -30,7 +30,15 @@
     </main>
 
     <script>
-        // Scripts for index.html if needed
+        function adminLogin(e) {
+            e.preventDefault();
+            const pass = prompt("Digite a senha de administrador:");
+            if (pass === "admin123") {
+                window.location.href = "admin.html";
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
     </script>
 </body>
 </html>
