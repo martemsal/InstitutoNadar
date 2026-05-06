@@ -182,19 +182,44 @@
 
     <div class="sidebar">
         <div class="section-title">Cadastros</div>
-        <button class="sidebar-btn" onclick="openModal('modalTurma')"><span>🏢</span> Turmas</button>
-        <button class="sidebar-btn" onclick="openModal('modalProfessor')"><span>👨‍🏫</span> Professores</button>
-        <button class="sidebar-btn" onclick="openModal('modalUsuario')"><span>👤</span> Usuários</button>
+        
+        <!-- Turmas -->
+        <div>
+            <button class="sidebar-btn" onclick="toggleSubmenu('subTurma')"><span>🏢</span> Turmas</button>
+            <div id="subTurma" class="submenu" style="display:none">
+                <button class="sidebar-btn" onclick="showSection('turmas')">Listar</button>
+                <button class="sidebar-btn" onclick="openModal('modalTurma')">Cadastrar</button>
+            </div>
+        </div>
+
+        <!-- Professores -->
+        <div>
+            <button class="sidebar-btn" onclick="toggleSubmenu('subProf')"><span>👨‍🏫</span> Professores</button>
+            <div id="subProf" class="submenu" style="display:none">
+                <button class="sidebar-btn" onclick="showSection('professores')">Listar</button>
+                <button class="sidebar-btn" onclick="openModal('modalProfessor')">Cadastrar</button>
+            </div>
+        </div>
+
+        <!-- Usuários -->
+        <div>
+            <button class="sidebar-btn" onclick="toggleSubmenu('subUser')"><span>👤</span> Usuários</button>
+            <div id="subUser" class="submenu" style="display:none">
+                <button class="sidebar-btn" onclick="showSection('usuarios')">Listar</button>
+                <button class="sidebar-btn" onclick="openModal('modalUsuario')">Cadastrar</button>
+            </div>
+        </div>
 
         <div class="section-title">Gerenciamento</div>
-        <button class="sidebar-btn active" onclick="showSection('alunos')"><span>👥</span> Alunos</button>
+        <button class="sidebar-btn" id="btnAlunos" onclick="showSection('alunos')"><span>👥</span> Alunos</button>
     </div>
 
     <div class="main-content">
-        <div id="sectionAlunos">
+        <!-- SEÇÃO ALUNOS -->
+        <div id="sectionAlunos" class="admin-section">
             <h1 style="margin-bottom: 2rem;">Alunos Registrados</h1>
             <div class="alunos-list" id="listaAlunos">
-                <!-- Mock Alunos -->
+                <!-- Alunos existentes -->
                 <div class="aluno-item" onclick="viewAluno('João Silva')">
                     <span>João Silva</span>
                     <span class="status-badge status-aguardando">Aguardando</span>
@@ -206,6 +231,47 @@
                 <div class="aluno-item" onclick="viewAluno('Carlos Santos')">
                     <span>Carlos Santos</span>
                     <span class="status-badge status-matriculado">Matriculado</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO TURMAS -->
+        <div id="sectionTurmas" class="admin-section" style="display:none">
+            <h1 style="margin-bottom: 2rem;">Turmas Cadastradas</h1>
+            <div class="alunos-list">
+                <div class="aluno-item">
+                    <span>Hidroginástica - 18:00</span>
+                    <span class="status-badge status-matriculado">45/50 Vagas</span>
+                </div>
+                <div class="aluno-item">
+                    <span>Natação Adulto - 07:00</span>
+                    <span class="status-badge status-matriculado">12/20 Vagas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO PROFESSORES -->
+        <div id="sectionProfessores" class="admin-section" style="display:none">
+            <h1 style="margin-bottom: 2rem;">Professores</h1>
+            <div class="alunos-list">
+                <div class="aluno-item">
+                    <span>Prof. Ricardo Souza</span>
+                    <span class="status-badge status-matriculado">Ativo</span>
+                </div>
+                <div class="aluno-item">
+                    <span>Profª Ana Clara</span>
+                    <span class="status-badge status-matriculado">Ativo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO USUÁRIOS -->
+        <div id="sectionUsuarios" class="admin-section" style="display:none">
+            <h1 style="margin-bottom: 2rem;">Usuários do Sistema</h1>
+            <div class="alunos-list">
+                <div class="aluno-item">
+                    <span>admin_master</span>
+                    <span class="status-badge status-matriculado">Administrador</span>
                 </div>
             </div>
         </div>
@@ -302,6 +368,26 @@
     </div>
 
     <script>
+        function toggleSubmenu(id) {
+            const sub = document.getElementById(id);
+            sub.style.display = sub.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function showSection(sectionId) {
+            // Esconde todas as seções
+            document.querySelectorAll('.admin-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+            
+            // Mostra a seção alvo
+            const target = 'section' + sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+            document.getElementById(target).style.display = 'block';
+
+            // Atualiza estado visual do menu
+            document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+            if (sectionId === 'alunos') document.getElementById('btnAlunos').classList.add('active');
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
